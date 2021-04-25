@@ -1,18 +1,29 @@
 const socket = io();
 let connectionsUsers = [];
 
+function setConnectionsUsers(connections) {
+  if(!(connections === [])) {
+    connectionsUsers = connections;
+  }
+}
+
+function getConnectionsUsers() {
+  return connectionsUsers;
+}
+
 socket.on("admin_list_all_users", (connections) => {
-  connectionsUsers = connections;
+  setConnectionsUsers(connections);
+  console.log("connectionsUsers", connectionsUsers)
   document.getElementById("list_users").innerHTML = "";
-
+  
   let template = document.getElementById("template").innerHTML;
-
+  
   connections.forEach((connection) => {
     const rendered = Mustache.render(template, {
       email: connection.user.email,
       id: connection.socket_id,
     });
-
+    
     document.getElementById("list_users").innerHTML += rendered;
   });
 });
@@ -33,7 +44,7 @@ function call(id) {
     user_id: connection.user_id,
   };
 
-  socket.emit("admin_user_in_support", params);
+  // socket.emit("admin_user_in_support", params);
 
   socket.emit("admin_list_messages_by_user", params, (messages) => {
     const divMessages = document.getElementById(
@@ -89,7 +100,10 @@ function sendMessage(id) {
 }
 
 socket.on("admin_receive_message", (data) => {
-  const connection = connectionsUsers.find(connection => connection.socket_id == data.socket_id);
+  const connectionRef = getConnectionsUsers();
+  console.log("CONNECTIONSUSERS", connectionRef)
+  connection = connectionRef.find(connection => connection.socket_id == data.socket_id);
+  console.log(connection)
   const divMessages = document.getElementById(
     `allMessages${connection.user_id}`
   );

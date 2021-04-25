@@ -42,7 +42,7 @@ io.on("connect", (socket: Socket) => {
 
     socket.emit("client_list_all_messages", allMessages);
 
-    const allUsers = connectionsService.findAllWithoutAdmin();
+    const allUsers = await connectionsService.findAllWithoutAdmin();
     io.emit("admin_list_all_users", allUsers);
   });
 
@@ -51,7 +51,7 @@ io.on("connect", (socket: Socket) => {
 
     const socket_id = socket.id;
 
-    const { user_id } = await connectionsService.findBySocketId(socket.id);
+    const { user_id } = await connectionsService.findBySocketID(socket_id);
 
     const message = await messagesService.create({
       text,
